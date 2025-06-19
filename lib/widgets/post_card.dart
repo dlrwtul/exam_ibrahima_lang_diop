@@ -1,11 +1,12 @@
 import 'package:exam_ibrahima_lang_diop/pages/one_post.dart';
-import 'package:exam_ibrahima_lang_diop/providers/comment_provider.dart';
+import 'package:exam_ibrahima_lang_diop/providers/favorite_provider.dart';
 import 'package:exam_ibrahima_lang_diop/providers/post_provider.dart';
 import 'package:exam_ibrahima_lang_diop/shared/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../models/post.dart';
+import '../providers/favorite_list_provider.dart';
 import '../providers/post_tree_provider.dart';
 
 class PostCard extends StatelessWidget {
@@ -18,9 +19,10 @@ class PostCard extends StatelessWidget {
         Provider.of<PostProvider>(context, listen: false);
     PostTreeProvider postTreeProvider =
         Provider.of<PostTreeProvider>(context, listen: false);
-    CommentProvider commentProvider =
-        Provider.of<CommentProvider>(context, listen: false);
-
+    FavoriteProvider favoriteProvider =
+        Provider.of<FavoriteProvider>(context, listen: false);
+    FavoriteListProvider favoriteListProvider =
+        Provider.of<FavoriteListProvider>(context, listen: false);
     return Card(
       color: Colors.white,
       borderOnForeground: true,
@@ -61,8 +63,6 @@ class PostCard extends StatelessWidget {
                       postProvider.setPost(post);
                       postTreeProvider.clearTree();
                       postTreeProvider.addPost(post);
-                      commentProvider
-                          .fetchComments(post.kids != null ? post.kids! : []);
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -91,8 +91,6 @@ class PostCard extends StatelessWidget {
                   postProvider.setPost(post);
                   postTreeProvider.clearTree();
                   postTreeProvider.addPost(post);
-                  commentProvider
-                      .fetchComments(post.kids != null ? post.kids! : []);
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => const OnePost()),
@@ -113,13 +111,23 @@ class PostCard extends StatelessWidget {
             IconButton(
                 enableFeedback: false,
                 onPressed: () {
-                  debugPrint("pressed");
+                  favoriteProvider.updateIsFavorite(post);
+                  favoriteListProvider.updateList(post);
                 },
-                icon: Icon(
-                  Icons.favorite,
-                  color: post.isFavorite != null && post.isFavorite!
-                      ? Colors.red
-                      : null,
+                icon: Consumer<FavoriteProvider>(
+                  builder: (context, provider, child) {
+                    bool isFavorite =
+                        post.isFavorite != null && post.isFavorite!
+                            ? true
+                            : false;
+                    isFavorite = (provider.favoriteStates.containsKey(post.id)
+                        ? provider.favoriteStates[post.id]
+                        : isFavorite)!;
+                    return Icon(
+                      Icons.favorite,
+                      color: isFavorite ? Colors.red : null,
+                    );
+                  },
                 ))
           ],
         ),

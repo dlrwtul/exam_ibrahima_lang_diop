@@ -1,6 +1,10 @@
 import 'package:exam_ibrahima_lang_diop/models/post.dart';
+import 'package:exam_ibrahima_lang_diop/providers/favorite_list_provider.dart';
 import 'package:exam_ibrahima_lang_diop/shared/utils.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../providers/favorite_provider.dart';
 
 class PostDetailsCard extends StatelessWidget {
   const PostDetailsCard({super.key, required this.post});
@@ -9,6 +13,10 @@ class PostDetailsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    FavoriteProvider favoriteProvider =
+        Provider.of<FavoriteProvider>(context, listen: false);
+    FavoriteListProvider favoriteListProvider =
+        Provider.of<FavoriteListProvider>(context, listen: false);
     return Card(
       color: Colors.white,
       borderOnForeground: true,
@@ -91,13 +99,24 @@ class PostDetailsCard extends StatelessWidget {
                 IconButton(
                     enableFeedback: false,
                     onPressed: () {
-                      debugPrint("pressed");
+                      favoriteProvider.updateIsFavorite(post);
+                      favoriteListProvider.updateList(post);
                     },
-                    icon: Icon(
-                      Icons.favorite,
-                      color: post.isFavorite != null && post.isFavorite!
-                          ? Colors.red
-                          : null,
+                    icon: Consumer<FavoriteProvider>(
+                      builder: (context, provider, child) {
+                        bool isFavorite =
+                            post.isFavorite != null && post.isFavorite!
+                                ? true
+                                : false;
+                        isFavorite =
+                            (provider.favoriteStates.containsKey(post.id)
+                                ? provider.favoriteStates[post.id]
+                                : isFavorite)!;
+                        return Icon(
+                          Icons.favorite,
+                          color: isFavorite ? Colors.red : null,
+                        );
+                      },
                     ))
               ],
             )

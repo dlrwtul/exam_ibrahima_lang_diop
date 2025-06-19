@@ -1,5 +1,7 @@
 import 'package:exam_ibrahima_lang_diop/pages/home.dart';
 import 'package:exam_ibrahima_lang_diop/providers/comment_provider.dart';
+import 'package:exam_ibrahima_lang_diop/providers/favorite_list_provider.dart';
+import 'package:exam_ibrahima_lang_diop/providers/favorite_provider.dart';
 import 'package:exam_ibrahima_lang_diop/providers/post_list_provider.dart';
 import 'package:exam_ibrahima_lang_diop/providers/post_provider.dart';
 import 'package:exam_ibrahima_lang_diop/providers/post_tree_provider.dart';
@@ -27,7 +29,9 @@ class MyApp extends StatelessWidget {
               create: (_) => PostListProvider(
                   Provider.of<ApiService>(context, listen: false))),
           ChangeNotifierProvider(create: (_) => PostTreeProvider()),
+          ChangeNotifierProvider(create: (_) => FavoriteListProvider()),
           ChangeNotifierProvider(create: (_) => PostProvider()),
+          ChangeNotifierProvider(create: (_) => FavoriteProvider()),
           ChangeNotifierProvider(
               create: (_) => CommentProvider(
                   Provider.of<ApiService>(context, listen: false)))

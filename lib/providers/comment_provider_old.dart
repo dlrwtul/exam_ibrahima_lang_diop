@@ -1,6 +1,5 @@
 import 'package:exam_ibrahima_lang_diop/models/post.dart';
 import 'package:exam_ibrahima_lang_diop/services/api_service.dart';
-import 'package:exam_ibrahima_lang_diop/shared/constants.dart';
 import 'package:flutter/material.dart';
 
 import '../services/database_helper.dart';
@@ -8,22 +7,31 @@ import '../services/post_service.dart';
 
 class CommentProvider extends ChangeNotifier {
   final ApiService apiService;
+  final List<Post> _comments = [];
   final DatabaseHelper _databaseHelper = DatabaseHelper();
   late final PostService _postService;
+  bool _isLoading = false;
+  String _error = "";
 
   CommentProvider(this.apiService) {
     _postService = PostService(_databaseHelper);
   }
 
-  Future<List<Post>> fetchComments(List<int> ids) async {
-    List<Post> comments = [];
+  List<Post> get comments => _comments;
+  bool get isLoading => _isLoading;
+  String get error => _error;
+
+  void fetchComments(List<int> ids) async {
+    _isLoading = true;
+    notifyListeners();
+    _comments.clear();
+
     List<int> localIds = [];
 
     for (int id in ids) {
-      List<Post> commentFound =
-          await _postService.findPostByIdAndType(id, commentType);
+      List<Post> commentFound = await _postService.findPostById(id);
       if (commentFound.isNotEmpty) {
-        comments.addAll(commentFound);
+        _comments.addAll(commentFound);
         localIds.add(id);
       }
     }
@@ -41,10 +49,11 @@ class CommentProvider extends ChangeNotifier {
           });
         }
       }
-      comments.addAll(fetchedComments);
+      _comments.addAll(fetchedComments);
     } catch (e) {
-      debugPrint(e.toString());
+      _error = e.toString();
     }
-    return comments;
+    _isLoading = false;
+    notifyListeners();
   }
 }

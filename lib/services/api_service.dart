@@ -1,6 +1,6 @@
 import 'dart:convert';
+
 import 'package:exam_ibrahima_lang_diop/shared/constants.dart';
-import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import '../models/post.dart';
@@ -25,9 +25,9 @@ class ApiService {
       return null;
     }
 
-    debugPrint("body === $body");
+    Post post = Post.fromMap(body);
 
-    return Post.fromMap(body);
+    return post;
   }
 
   Future<List<Post>> getPosts(List<int> ids) async {

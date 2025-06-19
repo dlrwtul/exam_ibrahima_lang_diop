@@ -5,7 +5,6 @@ import 'package:provider/provider.dart';
 
 import '../models/post.dart';
 import '../pages/post_tree.dart';
-import '../providers/comment_provider.dart';
 
 class CommentCard extends StatelessWidget {
   final Post comment;
@@ -15,9 +14,6 @@ class CommentCard extends StatelessWidget {
   Widget build(BuildContext context) {
     PostTreeProvider postTreeProvider =
         Provider.of<PostTreeProvider>(context, listen: false);
-    CommentProvider commentProvider =
-        Provider.of<CommentProvider>(context, listen: false);
-
     return Card(
       color: Colors.white,
       borderOnForeground: true,
@@ -57,9 +53,6 @@ class CommentCard extends StatelessWidget {
                   child: GestureDetector(
                     onTap: () {
                       postTreeProvider.addPost(comment);
-                      debugPrint("kids =============== ${comment.kids!}");
-                      commentProvider.fetchComments(
-                          comment.kids != null ? comment.kids! : []);
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -90,8 +83,6 @@ class CommentCard extends StatelessWidget {
                     enableFeedback: false,
                     onPressed: () {
                       postTreeProvider.addPost(comment);
-                      commentProvider.fetchComments(
-                          comment.kids != null ? comment.kids! : []);
                       Navigator.push(
                         context,
                         MaterialPageRoute(
