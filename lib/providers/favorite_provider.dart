@@ -10,7 +10,7 @@ class FavoriteProvider extends ChangeNotifier {
   late final PostService _postService;
 
   FavoriteProvider() {
-    _postService = PostService(_databaseHelper);
+    _postService = PostService(db: _databaseHelper);
   }
 
   void updateIsFavorite(Post post) async {

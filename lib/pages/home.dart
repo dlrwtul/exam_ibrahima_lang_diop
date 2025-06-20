@@ -1,9 +1,8 @@
 import 'package:exam_ibrahima_lang_diop/widgets/my_app_bar.dart';
 import 'package:flutter/material.dart';
 
-import 'posts.dart';
 import 'favorite_posts.dart';
-
+import 'posts.dart';
 
 class Home extends StatelessWidget {
   const Home({super.key});

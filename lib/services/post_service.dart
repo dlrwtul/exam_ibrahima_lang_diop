@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:exam_ibrahima_lang_diop/shared/constants.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -7,9 +5,15 @@ import '../models/post.dart';
 import 'database_helper.dart';
 
 class PostService {
+  static PostService? _instance;
   final DatabaseHelper databaseHelper;
 
-  PostService(this.databaseHelper);
+  PostService._(this.databaseHelper);
+
+  factory PostService({required DatabaseHelper db}) {
+    _instance ??= PostService._(db);
+    return _instance!;
+  }
 
   Future<int> insertPost(Post post) async {
     final db = await databaseHelper.database;
@@ -31,7 +35,8 @@ class PostService {
         'Posts',
         {
           "isFavorite": isFavorite ? 1 : 0,
-          "addedFavAt": isFavorite ? DateTime.now().millisecondsSinceEpoch : null
+          "addedFavAt":
+              isFavorite ? DateTime.now().millisecondsSinceEpoch : null
         },
         where: 'id = ?',
         whereArgs: [id]);

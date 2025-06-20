@@ -7,12 +7,12 @@ import '../services/database_helper.dart';
 import '../services/post_service.dart';
 
 class CommentProvider extends ChangeNotifier {
-  final ApiService apiService;
+  final ApiService _apiService = ApiService();
   final DatabaseHelper _databaseHelper = DatabaseHelper();
   late final PostService _postService;
 
-  CommentProvider(this.apiService) {
-    _postService = PostService(_databaseHelper);
+  CommentProvider() {
+    _postService = PostService(db: _databaseHelper);
   }
 
   Future<List<Post>> fetchComments(List<int> ids) async {
@@ -31,7 +31,7 @@ class CommentProvider extends ChangeNotifier {
     ids.removeWhere((id) => localIds.contains(id));
 
     try {
-      List<Post> fetchedComments = await apiService.getComments(ids);
+      List<Post> fetchedComments = await _apiService.getComments(ids);
       for (Post comment in fetchedComments) {
         if (comment.deleted == null && comment.dead == null) {
           _postService.insertPost(comment).then((int result) {

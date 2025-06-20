@@ -7,6 +7,12 @@ import '../models/post.dart';
 
 class ApiService {
   final String apiUrl = "https://hacker-news.firebaseio.com/v0/item/";
+  ApiService._internal();
+  static final _instance = ApiService._internal();
+
+  factory ApiService() {
+    return _instance;
+  }
 
   String getPostApiUrl(int id) {
     return "$apiUrl/$id.json?print=pretty";

@@ -8,7 +8,7 @@ import '../services/database_helper.dart';
 import '../services/post_service.dart';
 
 class PostListProvider extends ChangeNotifier {
-  final ApiService apiService;
+  final ApiService _apiService = ApiService();
   final DatabaseHelper _databaseHelper = DatabaseHelper();
   late final PostService _postService;
   String _error = "";
@@ -31,8 +31,8 @@ class PostListProvider extends ChangeNotifier {
     },
   );
 
-  PostListProvider(this.apiService) {
-    _postService = PostService(_databaseHelper);
+  PostListProvider() {
+    _postService = PostService(db: _databaseHelper);
   }
 
   String get error => _error;
@@ -58,7 +58,7 @@ class PostListProvider extends ChangeNotifier {
     ids.removeWhere((id) => localIds.contains(id));
 
     try {
-      List<Post> fetchedPosts = await apiService.getPosts(ids);
+      List<Post> fetchedPosts = await _apiService.getPosts(ids);
       for (Post post in fetchedPosts) {
         if (post.deleted == null && post.dead == null) {
           _postService.insertPost(post).then((int result) {
@@ -95,6 +95,17 @@ class PostListProvider extends ChangeNotifier {
 
   Future<List<Post>> fetchPagingFavoritePosts(int page) async {
     return await fetchFavoritePosts(page);
+  }
+
+  Future<void> removeUnusedPosts() async {
+    List<Post> posts = await _postService.retrievePosts();
+    await Future.wait(posts.map((post) async {
+      int id = post.id;
+      Post? fetchedPost = await _apiService.getPost(id);
+      if (fetchedPost?.dead == true || fetchedPost?.deleted == true) {
+        await _postService.deletePost(post.id);
+      }
+    }));
   }
 
   Future<void> refresh() async {

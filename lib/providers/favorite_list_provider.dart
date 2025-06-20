@@ -20,7 +20,7 @@ class FavoriteListProvider extends ChangeNotifier {
   );
 
   FavoriteListProvider() {
-    _postService = PostService(_databaseHelper);
+    _postService = PostService(db: _databaseHelper);
   }
 
   String get error => _error;
