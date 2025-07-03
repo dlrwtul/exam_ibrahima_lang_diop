@@ -19,21 +19,25 @@ class ApiService {
   }
 
   Future<Post?> getPost(int id) async {
-    final response = await http.get(Uri.parse(getPostApiUrl(id)));
+    try {
+      final response = await http.get(Uri.parse(getPostApiUrl(id)));
 
-    if (response.statusCode != 200) {
-      throw Exception("fetch post failed !");
-    }
+      if (response.statusCode != 200) {
+        throw Exception("Error on fetching post");
+      }
 
-    Map<String, dynamic>? body = jsonDecode(response.body);
+      Map<String, dynamic>? body = jsonDecode(response.body);
 
-    if (body == null) {
+      if (body == null) {
+        return null;
+      }
+
+      Post post = Post.fromMap(body);
+
+      return post;
+    } catch (e) {
       return null;
     }
-
-    Post post = Post.fromMap(body);
-
-    return post;
   }
 
   Future<List<Post>> getPosts(List<int> ids) async {
